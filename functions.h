@@ -19,7 +19,7 @@ public:
 	double x;	//x coordinate of point	
 	double y;	//y coordinate of point
 	double z;	//z coordinate of point
-	bool type;	//auxiliary parameter for the function find_bridges
+	int type;	//auxiliary parameter for the function find_bridges
 };
 
 point mass_of_points[10000];	//array of points
@@ -41,7 +41,8 @@ public:
 	int tr_amount;	//number of triangles in a group
 	int triang[2000];	//triangles in a group //БУДЕТ ВЕКТОРОМ, А НЕ ТУПЫМ МАССИВОМ
 	point* bridge[4];	//bridges in the group
-
+	vector <point*> coast_1;
+	vector <point*> coast_2;
 	
 	point_group(int k){      
 	this->amount = k;

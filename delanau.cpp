@@ -409,7 +409,7 @@ bool cw (point* a, point* b, point* c) {
 }
 
 bool ccw (point* a, point* b, point* c) {
-	return a->x*(b->y-c->y)+b->x*(c->y-a->y)+c->x*(a->y-b->y) >= 0;
+	return a->x*(b->y-c->y)+b->x*(c->y-a->y)+c->x*(a->y-b->y) > 0;
 }
 
 void convex_hull(vector <point*> & a) {
@@ -453,7 +453,13 @@ convex_hull((*p_vect)[num].shell);
 
 void find_bridges(vector <point_group>* p_vect, int num)
 {
-	int i,k = 0;
+	int j = 0;
+	int k = 0;
+	int i = 0;
+	int f = 0;
+	int tip1 = 0;
+	int tip2 = 0;
+	int tip3 = 0;
 	int papa = (*p_vect)[num].father;  
 	for (i=0; i<(*p_vect)[num].shell.size(); i++) {
 		(*p_vect)[num].shell[i]->type = 0;
@@ -466,6 +472,7 @@ void find_bridges(vector <point_group>* p_vect, int num)
 	}
 
 	convex_hull((*p_vect)[papa].shell);
+	(*p_vect)[papa].shell.push_back((*p_vect)[papa].shell[0]);
 
 	for (i=1; i<(*p_vect)[papa].shell.size(); i++)
 	{
@@ -478,13 +485,107 @@ void find_bridges(vector <point_group>* p_vect, int num)
 			}
 			
 			else {
-				(*p_vect)[papa].bridge[2] = (*p_vect)[papa].shell[i-1];
-                                (*p_vect)[papa].bridge[3] = (*p_vect)[papa].shell[i];
+				(*p_vect)[papa].bridge[2] = (*p_vect)[papa].shell[i];
+                                (*p_vect)[papa].bridge[3] = (*p_vect)[papa].shell[i-1];
                         }
 		}
 	}
-}
+	(*p_vect)[papa].shell.pop_back();
 
+	for (i=0; i<((*p_vect)[papa].shell.size()); i++) {
+		(*p_vect)[papa].shell[i]->type = -1;
+	}
+	
+	for (i=0; i<4; i++) (*p_vect)[papa].bridge[i]->type = -2;	
+	
+	int flag_1 = 0;
+	int flag_2 = 0;
+	i = 0;
+	do{
+		if (i>=((*p_vect)[num].shell.size())) j = i % ((*p_vect)[num].shell.size());
+		else j = i;
+		if ((i+1)>=((*p_vect)[num].shell.size())) k = (i+1) % ((*p_vect)[num].shell.size());
+                else k=i+1;
+		if ((i-1)>=((*p_vect)[num].shell.size())) f = (i-1) % ((*p_vect)[num].shell.size());
+                else f=i-1;
+
+
+		
+tip1 = (*p_vect)[num].shell[j]->type;
+tip2 = (*p_vect)[num].shell[k]->type;
+tip3 = (*p_vect)[num].shell[f]->type;
+
+
+
+		if (flag_1==0){
+
+			if ((((*p_vect)[num].shell[j]->type == -2) and ((*p_vect)[num].shell[k]->type == 0))
+			or (((*p_vect)[num].shell[j]->type == -2) and ((*p_vect)[num].shell[k]->type == -2) and ((*p_vect)[num].shell[f]->type == -1)))
+			{
+				(*p_vect)[papa].coast_1.push_back((*p_vect)[num].shell[j]);
+				flag_1=1;
+			}
+		}
+		
+		else {
+			if ((*p_vect)[num].shell[j]->type == -2) 
+                        {
+                                flag_2=1;
+				(*p_vect)[papa].coast_1.push_back((*p_vect)[num].shell[j]);
+                        }
+			else (*p_vect)[papa].coast_1.push_back((*p_vect)[num].shell[j]);
+
+		}
+
+		i++;
+	} while (flag_2==0);	
+	
+	
+	flag_1 = 0;
+        flag_2 = 0;
+        i = 1;
+        
+do{
+                if (i>=((*p_vect)[num-1].shell.size())) j = i % ((*p_vect)[num-1].shell.size());
+                else j = i;
+                if ((i+1)>=((*p_vect)[num-1].shell.size())) k = (i+1) % ((*p_vect)[num-1].shell.size());
+                else k=i+1;
+                if ((i-1)>=((*p_vect)[num-1].shell.size())) k = (i-1) % ((*p_vect)[num-1].shell.size());
+                else f=i-1;
+
+
+
+                if (flag_1==0){
+
+                        if ((((*p_vect)[num-1].shell[j]->type == -2) and ((*p_vect)[num-1].shell[k]->type == 1))
+                        or (((*p_vect)[num-1].shell[j]->type == -2) and ((*p_vect)[num-1].shell[k]->type == -2) and ((*p_vect)[num-1].shell[f]->type == -1)))
+                        {
+                                (*p_vect)[papa].coast_2.push_back((*p_vect)[num-1].shell[j]);
+                                flag_1=1;
+                        }
+                }
+
+                else {
+                        if ((*p_vect)[num-1].shell[j]->type == -2)
+                        {
+                                flag_2=1;
+				(*p_vect)[papa].coast_2.push_back((*p_vect)[num-1].shell[j]);
+                        }
+                        else (*p_vect)[papa].coast_2.push_back((*p_vect)[num-1].shell[j]);
+
+                }
+
+                i++;
+	} while (flag_2==0);
+
+if ((*p_vect)[papa].coast_1[0] == (*p_vect)[papa].coast_1[(*p_vect)[papa].coast_1.size()-1]) (*p_vect)[papa].coast_1.pop_back();
+if ((*p_vect)[papa].coast_2[0] == (*p_vect)[papa].coast_2[(*p_vect)[papa].coast_2.size()-1]) (*p_vect)[papa].coast_2.pop_back();
+
+reverse((*p_vect)[papa].coast_2.begin(), (*p_vect)[papa].coast_2.end());
+
+
+
+}
 
 
 

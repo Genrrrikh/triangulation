@@ -68,14 +68,35 @@ for (i=0; i<vect.size(); i++){
 	cout << "MY_FATHER=" << vect[i].father << endl;
 }
 
+//find_bridges(p_vect, 10);
+//find_bridges(p_vect, 8);
 find_bridges(p_vect, 6);
-cout << endl << endl;
-for (j=0; j<vect[2].shell.size(); j++) cout << vect[2].shell[j]->x << " " << vect[2].shell[j]->y << endl;
+find_bridges(p_vect, 4);
+find_bridges(p_vect, 2);
 
+int fortune = 0; 
+
+
+cout << endl << endl;
+for (j=0; j<vect[fortune].shell.size(); j++) {
+	cout << vect[fortune].shell[j]->x << " " << vect[fortune].shell[j]->y << endl;
+}
 
 cout << "SUKA" << endl;
-cout << vect[2].bridge[0]->x << " " << vect[2].bridge[0]->y << endl << vect[2].bridge[1]->x << " " << vect[2].bridge[1]->y << endl;
-cout << vect[2].bridge[2]->x << " " << vect[2].bridge[2]->y << endl << vect[2].bridge[3]->x << " " << vect[2].bridge[3]->y << endl;
+
+cout << vect[fortune].bridge[0]->x << " " << vect[fortune].bridge[0]->y << endl << vect[fortune].bridge[1]->x << " " << vect[fortune].bridge[1]->y << endl;
+cout << vect[fortune].bridge[2]->x << " " << vect[fortune].bridge[2]->y << endl << vect[fortune].bridge[3]->x << " " << vect[fortune].bridge[3]->y << endl;
+
+
+cout << "B1" << endl;
+
+
+for (i=0; i<vect[fortune].coast_1.size(); i++) {
+	cout << vect[fortune].coast_1[i]->x << " " << vect[fortune].coast_1[i]->y << endl;
+};
+cout << "B2" << endl;
+for (i=0; i<vect[fortune].coast_2.size(); i++) cout << vect[fortune].coast_2[i]->x << " " << vect[fortune].coast_2[i]->y << endl;
+
 
 
 //(*p).del();

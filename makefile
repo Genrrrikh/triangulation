@@ -1,10 +1,10 @@
 all: delanau
 
-delanau: main.o delanau.o
-	g++ main.o -o delanau
+delanau: main_Genrikh.o delanau.o
+	g++ main_Genrikh.o -o delanau
 
-main.o: main.cpp
-	g++ -c main.cpp
+main_Genrih.o: main_Genrikh.cpp
+	g++ -c main_Genrikh.cpp
 
 clean:
 	rm -rf *.o delanau
