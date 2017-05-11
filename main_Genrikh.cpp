@@ -6,7 +6,6 @@
 #include "delanau.cpp"
 
 using namespace std;
-
 int main ()
 {
 int i,N,j,k;

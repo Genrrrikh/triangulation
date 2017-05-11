@@ -5,7 +5,6 @@
 #include <malloc.h>
 
 using namespace std;
-
 FILE* input=fopen("input.txt","r");	//file containing information about points
 
 class line{

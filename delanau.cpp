@@ -7,7 +7,6 @@
 #include <algorithm>
 
 using namespace std;
-
 int compare_x(const void* x1, const void* x2)	//сomparison function for a function qsort that sorts the structure pointgroup along the x axis
 {	
 	double t;
