@@ -1,18 +1,32 @@
 #include "Graphics.h"
-#include <cmath>
-
+#include "functions.h"
 
 #define RAD_GRAD 57.32484076433121
 
-double X=0, Y=0, Z=0;                                           //zero point
+double X=1, Y=1, Z=0, dZ=0.75, topZ=0.8;                                           //zero point
+
+double _forward=0, _sideways=0;
 double dforward=0, dsideways=0;
+
 double Anglefi=0, Angleksy=0;                                   //spherical coordinates (where the camera is looking)45
 double dAnglefi=0, dAngleksy=0;
-double zoom=1;
+
+double zoom=3, dzoom=0;
+int view_mode=0;
+
+clock_t _time=0, old_time=0;
+double dtime=0;
+
+
+vector <triangle> *trian_vect_pointer;
 
 
 
-void InitializationGLUT(int* argc, char** argv, int param, int flag){
+void InitializationGLUT(int* argc, char** argv, int param, int flag, vector<triangle> *trian_pointer, void *pointer_to_points){
+
+    trian_vect_pointer=trian_pointer;
+
+    //setZeroPosition(pointer_to_points);
 
     glutInit(argc, argv);
 
@@ -61,11 +75,13 @@ void InitializationGLUT(int* argc, char** argv, int param, int flag){
     glutDisplayFunc(display);                       //set rendering function
     glutReshapeFunc(changeSize);                    //set function to change size
 
-    glutIdleFunc(display);
+    glutIdleFunc(display);//!!!
 
-    glutKeyboardFunc(processNormalKeys);            //set fnc to press key x3
+    glutKeyboardFunc(pressNormalKeys);            //set fnc to press key x4
     glutSpecialFunc(pressSpecialKey);
 	glutSpecialUpFunc(releaseSpecialKey);
+	glutKeyboardUpFunc(releaseNormalKey);
+
     glutIgnoreKeyRepeat(1);                         //for smooth movement
 
 
@@ -81,65 +97,85 @@ void display(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();                                       //clr matrix
 
-    Anglefi+=dAnglefi;
-    Angleksy+=dAngleksy;
+	_time=clock();
+	dtime=(_time-old_time)*15.0/CLOCKS_PER_SEC+0.0000000000001;
+	old_time=_time;
 
-    glTranslated(0, 0, -10);
+    Anglefi+=dAnglefi*dtime;
+    Angleksy+=dAngleksy*dtime;
+
+    if(Angleksy>0){Angleksy=0;}
+    if(Angleksy<-87){Angleksy=-87;}
+
+    if(Anglefi>360){Anglefi=0;}
+    if(Anglefi<-360){Anglefi=0;}
+
+    _forward+=dforward*dtime*zoom;
+    _sideways+=dsideways*dtime*zoom;
+
+    zoom+=zoom*dzoom*dtime;
+
+
     glRotated(Anglefi, 0, 0, 1);
+                                                   //rotation
     glRotated(Angleksy, cos(Anglefi/RAD_GRAD), -sin(Anglefi/RAD_GRAD), 0);
 
 
 
+    glTranslated(-_sideways*cos(Anglefi/RAD_GRAD), _sideways*sin(Anglefi/RAD_GRAD), 0.0);
+
+    glTranslated(-_forward*sin(Anglefi/RAD_GRAD), -_forward*cos(Anglefi/RAD_GRAD), 0.0);
+
+    glTranslated(-sin(Angleksy/RAD_GRAD)*sin(Anglefi/RAD_GRAD)*zoom,
+                -sin(Angleksy/RAD_GRAD)*cos(Anglefi/RAD_GRAD)*zoom,
+                -cos(Angleksy/RAD_GRAD)*zoom);
+
+
+    glTranslated(-X,-Y,-Z);
+
+    int triangles_vector_size=0, counter=0;
+    double red=0, green=0, blue=0, delta=0;
+
+
+    //glutWireTorus(0.5, 2.5, 5, 5);
+
+    triangles_vector_size=(*trian_vect_pointer).size();
+
     glBegin(GL_TRIANGLES);
-        glColor3d(1, 0, 0);
-        glVertex3d(-3, 2, 1);
-        glColor3d(0, 1, 0);
-        glVertex3d(-2, -1, 0);
-        glColor3d(0, 1, 1);
-        glVertex3d(-1, 0, -0.5);
+        for(counter=0;counter< triangles_vector_size;counter++){
 
-        glColor3d(1, 0, 0);
-        glVertex3d(-3, 2, 1);
-        glColor3d(0, 1, 1);
-        glVertex3d(-1, 0, -0.5);
-        glColor3d(0, 0, 1);
-        glVertex3d(1, 1, -1);
-
-        glColor3d(0, 1, 1);
-        glVertex3d(-1, 0, -0.5);
-        glColor3d(0, 0, 1);
-        glVertex3d(1, 1, -1);
-        glColor3d(0, 1, 1);
-        glVertex3d(2, -3, -0.5);
+            delta=(topZ-(*trian_vect_pointer)[counter].uzel[0]->z)/dZ;
+            if(delta<=0.5){
+                glColor3d(1, 0, 0);
+            }else{
+                glColor3d(1, 0, 0);
+            }
+            glVertex3d((*trian_vect_pointer)[counter].uzel[0]->x,
+                        (*trian_vect_pointer)[counter].uzel[0]->y,
+                        (*trian_vect_pointer)[counter].uzel[0]->z);
 
 
-        glColor3d(0, 1, 1);
-        glVertex3d(-1, 0, -0.5);
-        glColor3d(1, 1, 0);
-        glVertex3d(-1, -3, 0.5);
-        glColor3d(0, 1, 0);
-        glVertex3d(-2, -1, 0);
+            delta=(topZ-(*trian_vect_pointer)[counter].uzel[1]->z)/dZ;
+            if(delta<=0.5){
+                glColor3d(0, 1, 0);
+            }else{
+                glColor3d(0, 1, 0);
+            }
+            glVertex3d((*trian_vect_pointer)[counter].uzel[1]->x,
+                        (*trian_vect_pointer)[counter].uzel[1]->y,
+                        (*trian_vect_pointer)[counter].uzel[1]->z);
 
-        glColor3d(0, 1, 1);
-        glVertex3d(2, -3, -0.5);
-        glColor3d(0, 1, 1);
-        glVertex3d(-1, 0, -0.5);
-        glColor3d(1, 1, 0);
-        glVertex3d(-1, -3, 0.5);
 
-        glColor3d(0, 0, 1);
-        glVertex3d(1, 1, -1);
-        glColor3d(0, 1, 1);
-        glVertex3d(2, -3, -0.5);
-        glColor3d(0, 1, 1);
-        glVertex3d(4, 3, -0.5);
-
-        glColor3d(0, 0, 1);
-        glVertex3d(1, 1, -1);
-        glColor3d(0, 1, 1);
-        glVertex3d(4, 3, -0.5);
-        glColor3d(1, 0, 0);
-        glVertex3d(-3, 2, 1);
+            delta=(topZ-(*trian_vect_pointer)[counter].uzel[2]->z)/dZ;
+            if(delta<=0.5){
+                glColor3d(0,0,1);
+            }else{
+                glColor3d(0, 0, 1);
+            }
+            glVertex3d((*trian_vect_pointer)[counter].uzel[2]->x,
+                        (*trian_vect_pointer)[counter].uzel[2]->y,
+                        (*trian_vect_pointer)[counter].uzel[2]->z);
+        }
     glEnd();
 
 	glFlush();
@@ -160,7 +196,7 @@ void changeSize(int w, int h){
 	glMatrixMode(GL_MODELVIEW);
 };
 
-void processNormalKeys(unsigned char key, int x, int y) {
+void pressNormalKeys(unsigned char key, int x, int y) {
 
     switch (key) {
     case 27:
@@ -170,53 +206,92 @@ void processNormalKeys(unsigned char key, int x, int y) {
     case 'W':
     case 'ö':
     case 'Ö':
-        dforward=0.001;
+        dforward=0.2;
         break;
     case 's':
     case 'S':
     case 'û':
     case 'Û':
-        dforward=-0.001;
+        dforward=-0.2;
         break;
     case 'â':
     case 'Â':
     case 'd':
     case 'D':
-        dsideways=0.001;
+        dsideways=0.2;
         break;
     case 'a':
     case 'A':
     case 'ô':
     case 'Ô':
-        dsideways=-0.001;
+        dsideways=-0.2;
+        break;
+
+    case 'ê':
+    case 'Ê':
+    case 'r':
+    case 'R':
+        _forward=_sideways=0;
+        Anglefi=Angleksy=0;
+        zoom=3;
+        break;
+
+    case 'i':
+    case 'I':
+    case 'ø':
+    case 'Ø':
+        dzoom=-0.2;
+        break;
+
+    case 'o':
+    case 'O':
+    case 'ù':
+    case 'Ù':
+        dzoom=0.2;
         break;
 
     case ' ':
-        if(Anglefi==0 && Angleksy==0){
-            Angleksy=-60;
-            Anglefi=0;
-        }else{
-            Anglefi=0;
-            Angleksy=0;
+
+        view_mode++;
+
+        if(view_mode>3){view_mode=0;}
+
+        switch(view_mode){
+            case 0:
+                Anglefi=0;
+                Angleksy=0;
+                break;
+            case 1:
+                Anglefi=0;
+                Angleksy=-60;
+                break;
+            case 2:
+                Anglefi=120;
+                Angleksy=-60;
+                break;
+            case 3:
+                Anglefi=240;
+                Angleksy=-60;
+                break;
         }
         break;
     }
 };
 
-void pressSpecialKey(int key, int xx, int yy) {
+void pressSpecialKey(int key, int x, int y) {
 
 	switch (key) {
 		case GLUT_KEY_LEFT:
-            dAnglefi=0.1;
+            dAnglefi=50;
             break;
 		case GLUT_KEY_RIGHT:
-            dAnglefi=-0.1;
+            dAnglefi=-50;
             break;
 		case GLUT_KEY_UP:
-            dAngleksy=0.1;
+            dAngleksy=20;
             break;
 		case GLUT_KEY_DOWN:
-            dAngleksy=-0.1;
+            dAngleksy=-20;
             break;
 	}
 };
@@ -235,3 +310,73 @@ void releaseSpecialKey(int key, int x, int y) {
 			break;
 	}
 };
+
+void releaseNormalKey(unsigned char key, int x, int y) {
+
+	switch (key) {
+    case 27:
+        exit(0);
+        break;
+
+    case 'w':
+    case 'W':
+    case 'ö':
+    case 'Ö':
+    case 's':
+    case 'S':
+    case 'û':
+    case 'Û':
+        dforward=0.0;
+        break;
+    case 'â':
+    case 'Â':
+    case 'd':
+    case 'D':
+    case 'a':
+    case 'A':
+    case 'ô':
+    case 'Ô':
+        dsideways=0.0;
+        break;
+
+    case 'i':
+    case 'I':
+    case 'ø':
+    case 'Ø':
+    case 'ù':
+    case 'Ù':
+    case 'o':
+    case 'O':
+        dzoom=0.0;
+        break;
+    }
+};
+
+/*void setZeroPosition(void *pointer_to_points){
+
+    int point_vector_size=0, counter=0;
+    double Xmax=0, Xmin=0, Ymax=0, Ymin=0, Zmax=0, Zmin=0;
+
+    //point_vector_size=(*main_pointer).size();
+
+    Xmax=Xmin=(*pointer_to_points)[0].x;
+    Ymax=Ymin=(*pointer_to_points)[0].y;
+    Zmax=Zmin=(*pointer_to_points)[0].z;
+
+
+    for(counter=0;counter<point_vector_size;counter++){
+        if((*pointer_to_points)[counter].x > Xmax){Xmax=(*pointer_to_points)[counter].x;}
+        if((*pointer_to_points)[counter].x < Xmin){Xmin=(*pointer_to_points)[counter].x;}
+        if((*pointer_to_points)[counter].y > Ymax){Ymax=(*pointer_to_points)[counter].y;}
+        if((*pointer_to_points)[counter].y < ymin){Ymin=(*pointer_to_points)[counter].y;}
+        if((*pointer_to_points)[counter].z > Zmax){Zmax=(*pointer_to_points)[counter].z;}
+        if((*pointer_to_points)[counter].z < Zmin){Zmin=(*pointer_to_points)[counter].z;}
+    }
+
+    X=(Xmax-Xmin)/2.0;
+    Y=(Ymax-Ymin)/2.0;
+    dZ=(Zmax-Zmin);
+    if(0==dZ){dZ=1;}
+    Z=Zmax+dZ/10.0;
+    topZ=Zmax;
+};         */

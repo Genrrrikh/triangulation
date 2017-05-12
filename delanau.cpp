@@ -5,8 +5,10 @@
 #include <malloc.h>
 #include "functions.h"
 #include <algorithm>
-
+#include <cmath>
+#include "globals.h"
 using namespace std;
+
 int compare_x(const void* x1, const void* x2)	//сomparison function for a function qsort that sorts the structure pointgroup along the x axis
 {	
 	double t;
@@ -37,21 +39,21 @@ int diagonal(point* p0, point* p1, point* p2, point* p3)	//checks whether the li
 {	
 	line line_t;
 	line_t = line_by_points(p0, p1);
-	if ((((*p2).y-line_t.k*(*p2).x-line_t.b)*((*p3).y-line_t.k*(*p3).x-line_t.b))<0) return(1);
+	if ((((*p2).y-line_t.k*(*p2).x-line_t.b)*((*p3).y-line_t.k*(*p3).x-line_t.b))<=0) return(1);
 	else return(0); 
 }
 
 int is_it_type_1(point* p0, point* p1, point* p2, point* p3)	//сhecks whether this triangulation consists of 3 triangles
 {
-	int tx, ty, i;                                                
-	int x0 = (*p0).x;
-	int x1 = (*p1).x;
-	int x2 = (*p2).x;
-	int x3 = (*p3).x;
-	int y0 = (*p0).y;
-	int y1 = (*p1).y;
-	int y2 = (*p2).y;
-	int y3 = (*p3).y;
+	double tx, ty, i;                                                
+	double x0 = (*p0).x;
+	double x1 = (*p1).x;
+	double x2 = (*p2).x;
+	double x3 = (*p3).x;
+	double y0 = (*p0).y;
+	double y1 = (*p1).y;
+	double y2 = (*p2).y;
+	double y3 = (*p3).y;
 
 	for (i=0; i<4; i++)
 	{
@@ -355,6 +357,7 @@ void razdel(vector <point_group>* p_vect, int num, int type_of_sort)  //recursiv
 		}
 		(*p_vect)[new_num-1].father = num;
 		(*p_vect)[new_num].father = num;
+		(*p_vect)[num].fath = 1;
 		razdel(p_vect, new_num-1, new_type_of_sort);
 		razdel(p_vect, new_num, new_type_of_sort);
 	}
@@ -372,6 +375,7 @@ void razdel(vector <point_group>* p_vect, int num, int type_of_sort)  //recursiv
 
 		(*p_vect)[new_num-1].father = num;
                 (*p_vect)[new_num].father = num;
+		(*p_vect)[num].fath = 1;
 
 		razdel(p_vect, new_num-1, new_type_of_sort);
 		razdel(p_vect, new_num, new_type_of_sort);
@@ -390,6 +394,7 @@ void razdel(vector <point_group>* p_vect, int num, int type_of_sort)  //recursiv
 
 		(*p_vect)[new_num-1].father = num;
                 (*p_vect)[new_num].father = num;
+		(*p_vect)[num].fath = 1;
 
 		razdel(p_vect, new_num-1, new_type_of_sort);
 		razdel(p_vect, new_num, new_type_of_sort);
@@ -581,8 +586,103 @@ if ((*p_vect)[papa].coast_1[0] == (*p_vect)[papa].coast_1[(*p_vect)[papa].coast_
 if ((*p_vect)[papa].coast_2[0] == (*p_vect)[papa].coast_2[(*p_vect)[papa].coast_2.size()-1]) (*p_vect)[papa].coast_2.pop_back();
 
 reverse((*p_vect)[papa].coast_2.begin(), (*p_vect)[papa].coast_2.end());
+}
+
+void make_ls(vector <point_group>* p_vect, vector <triangle>* p_tr, int num, int st_1, int st_2, int fin_1, int fin_2)
+{
+triangle trian_t;
+
+	if ((st_1 == fin_1) and (st_2 == fin_2)) return;
+	
+	else if (st_1 == fin_1) 
+	{
+		trian_t.uzel[0] = (*p_vect)[num].coast_1[st_1];
+		trian_t.uzel[1] = (*p_vect)[num].coast_2[st_2];
+		trian_t.uzel[2] = (*p_vect)[num].coast_2[st_2+1];
+		(*p_tr).push_back(trian_t);
+		st_2++;
+	}
+	 
+	else if (st_2 == fin_2)
+
+        {
+                trian_t.uzel[0] = (*p_vect)[num].coast_1[st_1];
+                trian_t.uzel[1] = (*p_vect)[num].coast_2[st_2];
+                trian_t.uzel[2] = (*p_vect)[num].coast_1[st_1+1];
+                (*p_tr).push_back(trian_t);
+                st_1++;
+        }
+
+	else if ((diagonal((*p_vect)[num].coast_2[st_2], (*p_vect)[num].coast_1[st_1+1], (*p_vect)[num].coast_1[st_1], (*p_vect)[num].coast_2[st_2+1]) == 0))
+	{
+		trian_t.uzel[0] = (*p_vect)[num].coast_1[st_1];
+                trian_t.uzel[1] = (*p_vect)[num].coast_2[st_2];
+                trian_t.uzel[2] = (*p_vect)[num].coast_2[st_2+1];
+                (*p_tr).push_back(trian_t);
+                st_2++;
+	}
+
+	else if ((diagonal((*p_vect)[num].coast_1[st_1], (*p_vect)[num].coast_2[st_2+1], (*p_vect)[num].coast_2[st_1], (*p_vect)[num].coast_1[st_1+1]) == 0))
+	{
+		trian_t.uzel[0] = (*p_vect)[num].coast_1[st_1];
+                trian_t.uzel[1] = (*p_vect)[num].coast_2[st_2];
+                trian_t.uzel[2] = (*p_vect)[num].coast_1[st_1+1];
+                (*p_tr).push_back(trian_t);
+                st_1++;
+
+	}
+	
+	else
+	{
+
+		double x1 = (*p_vect)[num].coast_1[st_1]->x;
+		double y1 = (*p_vect)[num].coast_1[st_1]->y;
+		double x2 = (*p_vect)[num].coast_2[st_2]->x;
+		double y2 = (*p_vect)[num].coast_2[st_2]->y;
+		double x3 = (*p_vect)[num].coast_1[st_1+1]->x;
+        	double y3 = (*p_vect)[num].coast_1[st_1+1]->y;
+        	double x4 = (*p_vect)[num].coast_2[st_2+1]->x;
+        	double y4 = (*p_vect)[num].coast_2[st_2+1]->y;
 
 
+	double cos1_1 = ((x2-x1)*(x3-x1) + (y2-y1)*(y3-y1))/(sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) * sqrt((x1-x3)*(x1-x3) + (y1-y3)*(y1-y3)));
+	double cos1_2 = ((x1-x2)*(x3-x2) + (y1-y2)*(y3-y2))/(sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) * sqrt((x2-x3)*(x2-x3) + (y2-y3)*(y2-y3)));
+	double cos1_3 = ((x2-x3)*(x1-x3) + (y2-y3)*(y1-y3))/(sqrt((x3-x2)*(x3-x2) + (y3-y2)*(y3-y2)) * sqrt((x1-x3)*(x1-x3) + (y1-y3)*(y1-y3)));
+	double cos2_1 = ((x2-x1)*(x4-x1) + (y2-y1)*(y4-y1))/(sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) * sqrt((x1-x4)*(x1-x4) + (y1-y4)*(y1-y4)));
+	double cos2_2 = ((x1-x2)*(x4-x2) + (y1-y2)*(y4-y2))/(sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) * sqrt((x2-x4)*(x2-x4) + (y2-y4)*(y2-y4)));	double cos2_4 = ((x2-x4)*(x1-x4) + (y2-y4)*(y1-y4))/(sqrt((x4-x2)*(x4-x2) + (y4-y2)*(y4-y2)) * sqrt((x1-x4)*(x1-x4) + (y1-y4)*(y1-y4)));
+	
+		double min1 = max(cos1_1, cos1_2); double min2 = max(cos1_1, cos1_3); double min_1 = max(min1, min2);
+		min1 = max(cos2_1, cos2_2); min2 = max(cos2_1, cos2_4); double min_2 = max(min1, min2);	
+	
+		if (min_1 < min_2)
+		{
+			trian_t.uzel[0] = (*p_vect)[num].coast_1[st_1];
+                	trian_t.uzel[1] = (*p_vect)[num].coast_2[st_2];
+                	trian_t.uzel[2] = (*p_vect)[num].coast_2[st_2+1];
+                	(*p_tr).push_back(trian_t);
+                	st_2++;
+		}
+
+		else
+		{
+			trian_t.uzel[0] = (*p_vect)[num].coast_1[st_1];
+                        trian_t.uzel[1] = (*p_vect)[num].coast_2[st_2];
+                        trian_t.uzel[2] = (*p_vect)[num].coast_1[st_1+1];
+                        (*p_tr).push_back(trian_t);
+                        st_1++;
+		}
+	}
+
+make_ls(p_vect, p_tr, num, st_1, st_2, fin_1, fin_2);
+}
+
+
+void fill_the_gap(vector <point_group>* p_vect, vector <triangle>* p_tr, int num)
+{
+	int fin_1 = (*p_vect)[num].coast_1.size()-1;
+	int fin_2 = (*p_vect)[num].coast_2.size()-1;
+
+	make_ls(p_vect, p_tr, num, 0, 0, fin_1, fin_2);
 
 }
 
