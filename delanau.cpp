@@ -591,6 +591,8 @@ reverse((*p_vect)[papa].coast_2.begin(), (*p_vect)[papa].coast_2.end());
 void make_ls(vector <point_group>* p_vect, vector <triangle>* p_tr, int num, int st_1, int st_2, int fin_1, int fin_2)
 {
 triangle trian_t;
+line line_t, lines;
+int i;
 
 	if ((st_1 == fin_1) and (st_2 == fin_2)) return;
 	
@@ -613,36 +615,84 @@ triangle trian_t;
                 st_1++;
         }
 
-	else if ((diagonal((*p_vect)[num].coast_2[st_2], (*p_vect)[num].coast_1[st_1+1], (*p_vect)[num].coast_1[st_1], (*p_vect)[num].coast_2[st_2+1]) == 0))
+	else 
 	{
-		trian_t.uzel[0] = (*p_vect)[num].coast_1[st_1];
-                trian_t.uzel[1] = (*p_vect)[num].coast_2[st_2];
-                trian_t.uzel[2] = (*p_vect)[num].coast_2[st_2+1];
-                (*p_tr).push_back(trian_t);
-                st_2++;
-	}
+		bool flag1 = 0;
+		bool flag2 = 0;
+		int x_i, y_i;
+		line_t = line_by_points((*p_vect)[num].coast_1[st_1], (*p_vect)[num].coast_2[st_2+1]);
+		
+		for (i=0; i < (*p_vect)[num].coast_2.size()-1; i++){
+			
+			lines = line_by_points((*p_vect)[num].coast_2[i], (*p_vect)[num].coast_2[i+1]);
+			x_i = (lines.b - line_t.b) / (line_t.k - lines.k);
+			y_i = line_t.k*x_i + line_t.b;
+			if ((x_i < max( (*p_vect)[num].coast_1[st_1]->x, (*p_vect)[num].coast_2[st_2+1]->x )) and	
+		    		(x_i > min( (*p_vect)[num].coast_1[st_1]->x, (*p_vect)[num].coast_2[st_2+1]->x )) and
+		    		(y_i < max( (*p_vect)[num].coast_1[st_1]->y, (*p_vect)[num].coast_2[st_2+1]->y )) and
+                    		(y_i > min( (*p_vect)[num].coast_1[st_1]->y, (*p_vect)[num].coast_2[st_2+1]->y )) and
+		    		(x_i < max( (*p_vect)[num].coast_2[i]->x, (*p_vect)[num].coast_2[i+1]->x )) and
+                    		(x_i > min( (*p_vect)[num].coast_2[i]->x, (*p_vect)[num].coast_2[i+1]->x )) and
+                    		(y_i < max( (*p_vect)[num].coast_2[i]->y, (*p_vect)[num].coast_2[i+1]->y )) and
+                    		(y_i > min( (*p_vect)[num].coast_2[i]->y, (*p_vect)[num].coast_2[i+1]->y )))
+			{
+				flag1 = 1;
+			}
 
-	else if ((diagonal((*p_vect)[num].coast_1[st_1], (*p_vect)[num].coast_2[st_2+1], (*p_vect)[num].coast_2[st_1], (*p_vect)[num].coast_1[st_1+1]) == 0))
-	{
-		trian_t.uzel[0] = (*p_vect)[num].coast_1[st_1];
-                trian_t.uzel[1] = (*p_vect)[num].coast_2[st_2];
-                trian_t.uzel[2] = (*p_vect)[num].coast_1[st_1+1];
-                (*p_tr).push_back(trian_t);
-                st_1++;
+		}
+				
+		flag1 = 0; flag2 = 0;
+		line_t = line_by_points((*p_vect)[num].coast_1[st_1+1], (*p_vect)[num].coast_2[st_2]);
 
-	}
+                for (i=0; i < (*p_vect)[num].coast_1.size()-1; i++){
+
+                        lines = line_by_points((*p_vect)[num].coast_1[i], (*p_vect)[num].coast_1[i+1]);
+                        x_i = (lines.b - line_t.b) / (line_t.k - lines.k);
+                        y_i = line_t.k*x_i + line_t.b;
+                        if ((x_i < max( (*p_vect)[num].coast_2[st_2]->x, (*p_vect)[num].coast_1[st_1+1]->x )) and
+                                (x_i > min( (*p_vect)[num].coast_2[st_2]->x, (*p_vect)[num].coast_1[st_1+1]->x )) and
+                                (y_i < max( (*p_vect)[num].coast_2[st_2]->y, (*p_vect)[num].coast_1[st_1+1]->y )) and
+                                (y_i > min( (*p_vect)[num].coast_2[st_2]->y, (*p_vect)[num].coast_1[st_1+1]->y )) and
+                                (x_i < max( (*p_vect)[num].coast_1[i]->x, (*p_vect)[num].coast_1[i+1]->x )) and
+                                (x_i > min( (*p_vect)[num].coast_1[i]->x, (*p_vect)[num].coast_1[i+1]->x )) and
+                                (y_i < max( (*p_vect)[num].coast_1[i]->y, (*p_vect)[num].coast_1[i+1]->y )) and
+                                (y_i > min( (*p_vect)[num].coast_1[i]->y, (*p_vect)[num].coast_1[i+1]->y )))
+                        
+			{
+                                flag2 = 1;
+                        }
+		}
+
+		if (flag2 == 1) 
+			{
+                        	trian_t.uzel[0] = (*p_vect)[num].coast_1[st_1];
+                        	trian_t.uzel[1] = (*p_vect)[num].coast_2[st_2];
+                        	trian_t.uzel[2] = (*p_vect)[num].coast_2[st_2+1];
+                        	(*p_tr).push_back(trian_t);
+                        	st_2++;
+                	}
+		else if (flag1 == 1)
+			{	
+				trian_t.uzel[0] = (*p_vect)[num].coast_1[st_1];
+                        	trian_t.uzel[1] = (*p_vect)[num].coast_2[st_2];
+                        	trian_t.uzel[2] = (*p_vect)[num].coast_1[st_1+1];
+                        	(*p_tr).push_back(trian_t);
+                        	st_1++;
+
+			}
+
 	
-	else
-	{
+		else
+		{
 
-		double x1 = (*p_vect)[num].coast_1[st_1]->x;
-		double y1 = (*p_vect)[num].coast_1[st_1]->y;
-		double x2 = (*p_vect)[num].coast_2[st_2]->x;
-		double y2 = (*p_vect)[num].coast_2[st_2]->y;
-		double x3 = (*p_vect)[num].coast_1[st_1+1]->x;
-        	double y3 = (*p_vect)[num].coast_1[st_1+1]->y;
-        	double x4 = (*p_vect)[num].coast_2[st_2+1]->x;
-        	double y4 = (*p_vect)[num].coast_2[st_2+1]->y;
+			double x1 = (*p_vect)[num].coast_1[st_1]->x;
+			double y1 = (*p_vect)[num].coast_1[st_1]->y;
+			double x2 = (*p_vect)[num].coast_2[st_2]->x;
+			double y2 = (*p_vect)[num].coast_2[st_2]->y;
+			double x3 = (*p_vect)[num].coast_1[st_1+1]->x;
+        		double y3 = (*p_vect)[num].coast_1[st_1+1]->y;
+        		double x4 = (*p_vect)[num].coast_2[st_2+1]->x;
+        		double y4 = (*p_vect)[num].coast_2[st_2+1]->y;
 
 
 	double cos1_1 = ((x2-x1)*(x3-x1) + (y2-y1)*(y3-y1))/(sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) * sqrt((x1-x3)*(x1-x3) + (y1-y3)*(y1-y3)));
@@ -672,6 +722,10 @@ triangle trian_t;
                         st_1++;
 		}
 	}
+
+	
+
+}
 
 make_ls(p_vect, p_tr, num, st_1, st_2, fin_1, fin_2);
 }
