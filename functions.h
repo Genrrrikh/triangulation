@@ -45,7 +45,7 @@ public:
 	point** mass;	//array of pointers to points
 	vector <point*> shell;	//vector of pointers to the points that make up the shell
 	int tr_amount;	//number of triangles in a group
-	int triang[2000];	//triangles in a group //БУДЕТ ВЕКТОРОМ, А НЕ ТУПЫМ МАССИВОМ
+	int triang[1];	//triangles in a group //БУДЕТ ВЕКТОРОМ, А НЕ ТУПЫМ МАССИВОМ
 	point* bridge[4];	//bridges in the group
 	vector <point*> coast_1;
 	vector <point*> coast_2;

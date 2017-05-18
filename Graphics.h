@@ -24,6 +24,10 @@ void pressSpecialKey(int, int, int);
 void releaseSpecialKey(int, int, int);
 void releaseNormalKey(unsigned char, int, int);
 
+void pressMouseButton(int button, int state, int x, int y);
+void mouseMove(int x, int y);
+void mouseWheel(int, int, int, int);
+
 //void setZeroPosition(void*);                             //fnc to find center lol
 
 void InitializationGLUT(int *, char **, int, int, vector<triangle>*, void *);        //fnc to init window and draw

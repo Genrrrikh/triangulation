@@ -3,7 +3,7 @@
 
 #define RAD_GRAD 57.32484076433121
 
-double X=1, Y=1, Z=0, dZ=0.75, topZ=0.8;                                           //zero point
+double X=1, Y=1, Z=0, dZ=0.75, topZ=0.1;                                           //zero point
 
 double _forward=0, _sideways=0;
 double dforward=0, dsideways=0;
@@ -16,6 +16,8 @@ int view_mode=0;
 
 clock_t _time=0, old_time=0;
 double dtime=0;
+
+int MouseX=-1, MouseY=-1;
 
 
 vector <triangle> *trian_vect_pointer;
@@ -62,7 +64,7 @@ void InitializationGLUT(int* argc, char** argv, int param, int flag, vector<tria
             break;
     }
 
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_ALPHA | GLUT_ACCUM);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_ALPHA | GLUT_ACCUM | GLUT_DEPTH);
     glutCreateWindow("TRIANGULATOR");               //title
 
 
@@ -81,6 +83,10 @@ void InitializationGLUT(int* argc, char** argv, int param, int flag, vector<tria
     glutSpecialFunc(pressSpecialKey);
 	glutSpecialUpFunc(releaseSpecialKey);
 	glutKeyboardUpFunc(releaseNormalKey);
+
+	glutMouseFunc(pressMouseButton);
+	glutMotionFunc(mouseMove);
+	//glutMouseWheelFunc();//1111111111111111111111111
 
     glutIgnoreKeyRepeat(1);                         //for smooth movement
 
@@ -142,41 +148,160 @@ void display(){
     triangles_vector_size=(*trian_vect_pointer).size();
 
     glBegin(GL_TRIANGLES);
-        for(counter=0;counter< triangles_vector_size;counter++){
-
-            delta=(topZ-(*trian_vect_pointer)[counter].uzel[0]->z)/dZ;
-            if(delta<=0.5){
-                glColor3d(1, 0, 0);
-            }else{
-                glColor3d(1, 0, 0);
-            }
-            glVertex3d((*trian_vect_pointer)[counter].uzel[0]->x,
+       for(counter=0;counter< triangles_vector_size;counter++){
+/*
+if (counter % 7 == 0){
+           
+                glColor3d(255, 0, 0);
+		glVertex3d((*trian_vect_pointer)[counter].uzel[0]->x,
                         (*trian_vect_pointer)[counter].uzel[0]->y,
                         (*trian_vect_pointer)[counter].uzel[0]->z);
-
-
-            delta=(topZ-(*trian_vect_pointer)[counter].uzel[1]->z)/dZ;
-            if(delta<=0.5){
-                glColor3d(0, 1, 0);
-            }else{
-                glColor3d(0, 1, 0);
-            }
-            glVertex3d((*trian_vect_pointer)[counter].uzel[1]->x,
+	//	glColor3d(0, 1, 0);
+           	glVertex3d((*trian_vect_pointer)[counter].uzel[1]->x,
                         (*trian_vect_pointer)[counter].uzel[1]->y,
                         (*trian_vect_pointer)[counter].uzel[1]->z);
+	//	glColor3d(0, 0, 1);
+            	glVertex3d((*trian_vect_pointer)[counter].uzel[2]->x,
+                        (*trian_vect_pointer)[counter].uzel[2]->y,
+			(*trian_vect_pointer)[counter].uzel[2]->z);
+} 
 
 
-            delta=(topZ-(*trian_vect_pointer)[counter].uzel[2]->z)/dZ;
-            if(delta<=0.5){
-                glColor3d(0,0,1);
-            }else{
-                glColor3d(0, 0, 1);
-            }
-            glVertex3d((*trian_vect_pointer)[counter].uzel[2]->x,
+else if (counter % 7 == 1){
+
+                glColor3d(0, 255, 0);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[0]->x,
+                        (*trian_vect_pointer)[counter].uzel[0]->y,
+                        (*trian_vect_pointer)[counter].uzel[0]->z);
+        //      glColor3d(0, 1, 0);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[1]->x,
+                        (*trian_vect_pointer)[counter].uzel[1]->y,
+                        (*trian_vect_pointer)[counter].uzel[1]->z);
+        //      glColor3d(0, 0, 1);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[2]->x,
                         (*trian_vect_pointer)[counter].uzel[2]->y,
                         (*trian_vect_pointer)[counter].uzel[2]->z);
-        }
-    glEnd();
+}
+               
+else if (counter % 7 == 2){
+
+                glColor3d(0, 0, 255);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[0]->x,
+                        (*trian_vect_pointer)[counter].uzel[0]->y,
+                        (*trian_vect_pointer)[counter].uzel[0]->z);
+        //      glColor3d(0, 1, 0);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[1]->x,
+                        (*trian_vect_pointer)[counter].uzel[1]->y,
+                        (*trian_vect_pointer)[counter].uzel[1]->z);
+        //      glColor3d(0, 0, 1);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[2]->x,
+                        (*trian_vect_pointer)[counter].uzel[2]->y,
+                        (*trian_vect_pointer)[counter].uzel[2]->z);
+}
+
+else if (counter % 7 == 3){
+
+                glColor3d(255, 255, 255);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[0]->x,
+                        (*trian_vect_pointer)[counter].uzel[0]->y,
+                        (*trian_vect_pointer)[counter].uzel[0]->z);
+        //      glColor3d(0, 1, 0);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[1]->x,
+                        (*trian_vect_pointer)[counter].uzel[1]->y,
+                        (*trian_vect_pointer)[counter].uzel[1]->z);
+        //      glColor3d(0, 0, 1);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[2]->x,
+                        (*trian_vect_pointer)[counter].uzel[2]->y,
+                        (*trian_vect_pointer)[counter].uzel[2]->z);
+}
+
+else if (counter % 7 == 4){
+
+                glColor3d(255, 255, 0);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[0]->x,
+                        (*trian_vect_pointer)[counter].uzel[0]->y,
+                        (*trian_vect_pointer)[counter].uzel[0]->z);
+        //      glColor3d(0, 1, 0);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[1]->x,
+                        (*trian_vect_pointer)[counter].uzel[1]->y,
+                        (*trian_vect_pointer)[counter].uzel[1]->z);
+        //      glColor3d(0, 0, 1);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[2]->x,
+                        (*trian_vect_pointer)[counter].uzel[2]->y,
+                        (*trian_vect_pointer)[counter].uzel[2]->z);
+}
+
+else if (counter % 7 == 5){
+
+                glColor3d(255, 0, 255);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[0]->x,
+                        (*trian_vect_pointer)[counter].uzel[0]->y,
+                        (*trian_vect_pointer)[counter].uzel[0]->z);
+        //      glColor3d(0, 1, 0);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[1]->x,
+                        (*trian_vect_pointer)[counter].uzel[1]->y,
+                        (*trian_vect_pointer)[counter].uzel[1]->z);
+        //      glColor3d(0, 0, 1);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[2]->x,
+                        (*trian_vect_pointer)[counter].uzel[2]->y,
+                        (*trian_vect_pointer)[counter].uzel[2]->z);
+}
+
+else if (counter % 7 == 6){
+
+                glColor3d(0, 0, 0);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[0]->x,
+                        (*trian_vect_pointer)[counter].uzel[0]->y,
+                        (*trian_vect_pointer)[counter].uzel[0]->z);
+        //      glColor3d(0, 1, 0);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[1]->x,
+                        (*trian_vect_pointer)[counter].uzel[1]->y,
+                        (*trian_vect_pointer)[counter].uzel[1]->z);
+        //      glColor3d(0, 0, 1);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[2]->x,
+                        (*trian_vect_pointer)[counter].uzel[2]->y,
+                        (*trian_vect_pointer)[counter].uzel[2]->z);
+}
+*/
+
+
+                glColor3d(255, 0, 0);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[0]->x,
+                        (*trian_vect_pointer)[counter].uzel[0]->y,
+                        (*trian_vect_pointer)[counter].uzel[0]->z);
+              glColor3d(0, 255, 0);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[1]->x,
+                        (*trian_vect_pointer)[counter].uzel[1]->y,
+                        (*trian_vect_pointer)[counter].uzel[1]->z);
+              glColor3d(0, 0, 255);
+                glVertex3d((*trian_vect_pointer)[counter].uzel[2]->x,
+                        (*trian_vect_pointer)[counter].uzel[2]->y,
+                        (*trian_vect_pointer)[counter].uzel[2]->z);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+    
+
+
+
+
+
+
+
+
+glEnd();
 
 	glFlush();
 	glutSwapBuffers();
@@ -198,7 +323,7 @@ void changeSize(int w, int h){
 
 void pressNormalKeys(unsigned char key, int x, int y) {
 
-    switch (key) {
+    switch ((char)key) {
     case 27:
         exit(0);
         break;
@@ -313,7 +438,7 @@ void releaseSpecialKey(int key, int x, int y) {
 
 void releaseNormalKey(unsigned char key, int x, int y) {
 
-	switch (key) {
+	switch ((char)key) {
     case 27:
         exit(0);
         break;
@@ -380,3 +505,34 @@ void releaseNormalKey(unsigned char key, int x, int y) {
     Z=Zmax+dZ/10.0;
     topZ=Zmax;
 };         */
+
+void pressMouseButton(int button, int state, int x, int y){
+
+    if (button == GLUT_LEFT_BUTTON) {       //when we pushed left button, allow movement
+		if (state == GLUT_UP) {
+			MouseX=MouseY=-1;
+		}
+		else  {                             // state = GLUT_DOWN, allow movement
+			MouseX=x;
+			MouseY=y;
+		}
+	}
+
+	if(button==3){zoom-=zoom*0.2;}
+    if(button==4){zoom+=zoom*0.2;}
+
+};
+
+void mouseMove(int x, int y){
+    if((MouseX>=0)&&(MouseY>=0)){          //when movement allowed
+        Anglefi+=(x-MouseX)*0.1;
+        Angleksy+=(y-MouseY)*0.1;
+        MouseX=x;
+        MouseY=y;
+    }
+};
+
+void mouseWheel(int wheel, int direction, int x, int y){
+    if(direction>0){zoom-=zoom*0.2;}
+    if(direction<0){zoom+=zoom*0.2;}
+}

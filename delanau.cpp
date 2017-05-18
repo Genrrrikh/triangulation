@@ -108,7 +108,7 @@ void starting_triangulate(vector <triangle>* p_tr, vector <point_group>* p_vect,
 
 	if (kolvo == 3) 
 	{
-		cout << "triangulation type =-1" << endl;
+		//cout << "triangulation type =-1" << endl;
 		for (i=0; i<3; i++) triangle_t.uzel[i] = (*p_vect)[num].mass[i]; 
 		triangle_t.trian[i] = NULL;
 		(*p_tr).push_back(triangle_t);
@@ -120,7 +120,7 @@ void starting_triangulate(vector <triangle>* p_tr, vector <point_group>* p_vect,
 	else if (kolvo == 4) 	//ТУТ НАДО ИСПРАВИТЬ
 	{	
 		int k=is_it_type_1((*p_vect)[num].mass[0], (*p_vect)[num].mass[1], (*p_vect)[num].mass[2], (*p_vect)[num].mass[3]);
-		cout << "triangulation type =" << k << endl;
+		//cout << "triangulation type =" << k << endl;
 		if (k==0) 
 		{ 
 			triangle_t.uzel[0]=(*p_vect)[num].mass[0];
@@ -200,7 +200,7 @@ void starting_triangulate(vector <triangle>* p_tr, vector <point_group>* p_vect,
 			if ((delanau((*p_vect)[num].mass[0], (*p_vect)[num].mass[1], (*p_vect)[num].mass[2], (*p_vect)[num].mass[3])==1) and
 	    	    	(delanau((*p_vect)[num].mass[0], (*p_vect)[num].mass[1], (*p_vect)[num].mass[3], (*p_vect)[num].mass[2])==1))
 			{
-				cout << "___1___" << endl;
+				//cout << "___1___" << endl;
 				triangle_t.uzel[0]=(*p_vect)[num].mass[0];
 				triangle_t.uzel[1]=(*p_vect)[num].mass[2];
 				triangle_t.uzel[2]=(*p_vect)[num].mass[1];
@@ -219,7 +219,7 @@ void starting_triangulate(vector <triangle>* p_tr, vector <point_group>* p_vect,
 
 			else
 			{
-				cout << "___2___" << endl;
+				//cout << "___2___" << endl;
 				triangle_t.uzel[0]=(*p_vect)[num].mass[0];
         			triangle_t.uzel[1]=(*p_vect)[num].mass[2];
         			triangle_t.uzel[2]=(*p_vect)[num].mass[3];
@@ -242,7 +242,7 @@ void starting_triangulate(vector <triangle>* p_tr, vector <point_group>* p_vect,
  			if ((delanau((*p_vect)[num].mass[0], (*p_vect)[num].mass[2], (*p_vect)[num].mass[3], (*p_vect)[num].mass[1])==1) and
             	    	    (delanau((*p_vect)[num].mass[0], (*p_vect)[num].mass[2], (*p_vect)[num].mass[1], (*p_vect)[num].mass[3])==1))
 			{
-				cout << "___3___" << endl;
+				//cout << "___3___" << endl;
         			triangle_t.uzel[0]=(*p_vect)[num].mass[0];
         			triangle_t.uzel[1]=(*p_vect)[num].mass[2];
         			triangle_t.uzel[2]=(*p_vect)[num].mass[1];
@@ -261,7 +261,7 @@ void starting_triangulate(vector <triangle>* p_tr, vector <point_group>* p_vect,
 
         		else
 			{
-				cout << "___4___" << endl;
+				//cout << "___4___" << endl;
         			triangle_t.uzel[0]=(*p_vect)[num].mass[0];
         			triangle_t.uzel[1]=(*p_vect)[num].mass[1];
         			triangle_t.uzel[2]=(*p_vect)[num].mass[3];
@@ -285,7 +285,7 @@ void starting_triangulate(vector <triangle>* p_tr, vector <point_group>* p_vect,
 			 if ((delanau((*p_vect)[num].mass[0], (*p_vect)[num].mass[1], (*p_vect)[num].mass[2], (*p_vect)[num].mass[3])==1) and
             		     (delanau((*p_vect)[num].mass[1], (*p_vect)[num].mass[2], (*p_vect)[num].mass[3], (*p_vect)[num].mass[0])==1))
 			{
-				cout << "___5___" << endl;
+				//cout << "___5___" << endl;
         			triangle_t.uzel[0]=(*p_vect)[num].mass[0];
         			triangle_t.uzel[1]=(*p_vect)[num].mass[1];
         			triangle_t.uzel[2]=(*p_vect)[num].mass[2];
@@ -305,7 +305,7 @@ void starting_triangulate(vector <triangle>* p_tr, vector <point_group>* p_vect,
 
         		else
 			{
-				cout << "___6___" << endl;
+				//cout << "___6___" << endl;
         			triangle_t.uzel[0]=(*p_vect)[num].mass[0];
         			triangle_t.uzel[1]=(*p_vect)[num].mass[2];
         			triangle_t.uzel[2]=(*p_vect)[num].mass[3];

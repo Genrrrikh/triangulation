@@ -1,0 +1,3 @@
+to start this program write down 
+g++ -g main_Genrikh.cpp -lglut -lGLU -lGL
+

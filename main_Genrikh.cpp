@@ -5,7 +5,8 @@
 #include <malloc.h>
 #include "delanau.cpp"
 #include "Graphics.cpp"
-
+#include <iomanip>
+#include <math.h>
 
 using namespace std;
 
@@ -17,16 +18,22 @@ vector <point_group>::iterator p;
 vector <point_group>* p_vect = &vect;
 vector <triangle> triangles;
 vector <triangle>* p_tr = &triangles;
-cin >> N;
+ifstream fin(argv[1]);
 
+if (!fin.is_open())
+        cout << "Файл не может быть открыт!\n";
+else {
 
+	fin >> N;
+      	for (i=0; i<(3*N); i++)
+	{
+		if (i<N) fin >> mass_of_points[i].x;
+		else if (i<2*N) fin >> mass_of_points[i-N].y;
+		else fin >> mass_of_points[i-2*N].z;
+	}
 
-for (i=0; i<(3*N); i++)
-{
-	if (i<N) fscanf(input,"%lf",&mass_of_points[i].x);
-	else if (i<2*N) fscanf(input,"%lf",&mass_of_points[i-N].y);
-	else fscanf(input,"%lf",&mass_of_points[i-2*N].z);
-}
+	fin.close();
+};	
 
 vect.push_back(point_group(N)); //с помощью конструктора выделяем память под первую структуру и сразу кладем ее в вектор
 vect[0].father = -1;
@@ -49,7 +56,7 @@ for (i=0; i<triangles.size(); i++){
 		cout << (triangles[i].uzel[j]->x) << " " << (triangles[i].uzel[j]->y) << endl;
 	}
 }*/
-
+/*
 for (i=0; i<vect.size(); i++){
 	cout << "Triangulation #" << i << endl;
 	cout << "Triangles amount=" << vect[i].tr_amount << endl;
@@ -64,17 +71,17 @@ for (i=0; i<vect.size(); i++){
 		cout << endl;
 	}
 }
-
+*/
 for (i=0; i<vect.size(); i++){
 	if (vect[i].amount <= 4) do_shell(p_vect, i);
 }
-
+/*
 for (i=0; i<vect.size(); i++){
 	cout << "NUMBER=" << i << endl;
 	for (j=0; j<vect[i].shell.size(); j++) cout << vect[i].shell[j]->x << " " << vect[i].shell[j]->y << endl;
 	cout << "MY_FATHER=" << vect[i].father << endl;
 }
-
+*/
 for (i=(vect.size()-1)/2; i>=1; i--) find_bridges(p_vect, i*2);
 /*
 find_bridges(p_vect, 10);
@@ -124,13 +131,13 @@ fill_the_gap(p_vect, p_tr, 1);
 fill_the_gap(p_vect, p_tr, 0);
 */
 //fill_the_gap(p_vect, p_tr, 0);
-
+/*
 for (i=0; i<triangles.size(); i++){
         cout <<"triangle #" << i << endl;
         for (j=0; j<3; j++){
                 cout << (triangles[i].uzel[j]->x) << " " << (triangles[i].uzel[j]->y) << endl;
         }
-}
+}*/
 InitializationGLUT(&argc, argv, LFK, FULL_SCREEN, p_tr, NULL);
 
 return 0;
