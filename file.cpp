@@ -24,16 +24,16 @@ int main(int argc, char* argv[])
  
  int randomDigit;
 
-        for (int i = 0; i < 2000000; i++)
+        for (int i = 0; i < 666; i++)
         {
                 randomDigit = rand(); // запись случайного числа, которое вернет rand
         	fout << (randomDigit/100000000) << "." << (randomDigit % 10000) << endl;
 	}
 	
-	for (int i = 0; i < 1000000; i++)
+	for (int i = 0; i < 333; i++)
         {
                 randomDigit = rand(); // запись случайного числа, которое вернет rand
-                fout << (randomDigit/10000000000) << "." << (randomDigit % 10000) << endl;
+                fout << (randomDigit/1000000000) << "." << (randomDigit % 10000) << endl;
         }
 
 

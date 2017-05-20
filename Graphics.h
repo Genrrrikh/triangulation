@@ -5,6 +5,7 @@
 #include <cmath>
 #include <vector>
 #include <ctime>
+#include "functions.h"
 
 
 
@@ -29,8 +30,8 @@ void mouseMove(int x, int y);
 void mouseWheel(int, int, int, int);
 
 //void setZeroPosition(void*);                             //fnc to find center lol
-
-void InitializationGLUT(int *, char **, int, int, vector<triangle>*, void *);        //fnc to init window and draw
+//void InitializationGLUT(int* argc, char** argv, int param, int flag, vector <triangle>* trian_pointer, void *pointer_to_points)
+void InitializationGLUT(int *, char **, int, int, vector <triangle>*, void *);        //fnc to init window and draw
 /*1st is pointer to argc, 2nd - char** argv (param to main)
 3d is window size in pixels and the 4th is full_screen flag
 void* is pointer to triangles vector, 2nd void * is pointer to points vector;

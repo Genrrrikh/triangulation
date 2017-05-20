@@ -3,52 +3,60 @@
 #include <iostream>
 #include <cstdlib>
 #include <malloc.h>
-#include "delanau.cpp"
-#include "Graphics.cpp"
 #include <iomanip>
 #include <math.h>
+#include "Graphics.h"
+#include "functions.h"
+
+point mass_of_points[400000];	//array of points
+int vector_pointer = 0;		//structure counter
+int tr_pointer = 0;		//triangles counter
 
 using namespace std;
 
-int main (int argc, char** argv)
+int
+main (int argc, char **argv)
 {
-int i,N,j,k;
-vector <point_group> vect;
-vector <point_group>::iterator p;
-vector <point_group>* p_vect = &vect;
-vector <triangle> triangles;
-vector <triangle>* p_tr = &triangles;
-ifstream fin(argv[1]);
+    int i, N, j, k;
 
-if (!fin.is_open())
-        cout << "Файл не может быть открыт!\n";
-else {
+    vector < point_group > vect;
+    vector < point_group >::iterator p;
+    vector < point_group > *p_vect = &vect;
+    vector < triangle > triangles;
+    vector < triangle > *p_tr = &triangles;
+    ifstream fin (argv[1]);
+
+    if (!fin.is_open ())
+	cout << "error: Нет такого файла" << endl;
+
+    else {
 
 	fin >> N;
-      	for (i=0; i<(3*N); i++)
-	{
-		if (i<N) fin >> mass_of_points[i].x;
-		else if (i<2*N) fin >> mass_of_points[i-N].y;
-		else fin >> mass_of_points[i-2*N].z;
+	for (i = 0; i < (3 * N); i++) {
+	    if (i < N)
+		fin >> mass_of_points[i].x;
+	    else if (i < 2 * N)
+		fin >> mass_of_points[i - N].y;
+	    else
+		fin >> mass_of_points[i - 2 * N].z;
 	}
 
-	fin.close();
-};	
+	fin.close ();
 
-vect.push_back(point_group(N)); //с помощью конструктора выделяем память под первую структуру и сразу кладем ее в вектор
-vect[0].father = -1;
-p = vect.begin();
+	vect.push_back (point_group (N));	//с помощью конструктора выделяем память под первую структуру и сразу кладем ее в вектор
+	vect[0].father = -1;
+	p = vect.begin ();
 
-for (i=0; i<N; i++){
-	(*p).mass[i] = &(mass_of_points[i]); //заполняем структуру
-}
+	for (i = 0; i < N; i++) {
+	    (*p).mass[i] = &(mass_of_points[i]);	//заполняем структуру
+	}
 
-qsort((*p).mass, (*p).amount, sizeof(point*), compare_x); //сортируем структуру по х
+	qsort ((*p).mass, (*p).amount, sizeof (point *), compare_x);	//сортируем структуру по х
 
-razdel(p_vect, 0, 0);
-for (i=0; i<=vector_pointer; i++){
-	starting_triangulate(p_tr, p_vect, i);
-}
+	razdel (p_vect, 0, 0);
+	for (i = 0; i <= vector_pointer; i++) {
+	    starting_triangulate (p_tr, p_vect, i);
+	}
 /*
 for (i=0; i<triangles.size(); i++){
 	cout <<"triangle #" << i << endl;
@@ -72,9 +80,10 @@ for (i=0; i<vect.size(); i++){
 	}
 }
 */
-for (i=0; i<vect.size(); i++){
-	if (vect[i].amount <= 4) do_shell(p_vect, i);
-}
+	for (i = 0; i < vect.size (); i++) {
+	    if (vect[i].amount <= 4)
+		do_shell (p_vect, i);
+	}
 /*
 for (i=0; i<vect.size(); i++){
 	cout << "NUMBER=" << i << endl;
@@ -82,7 +91,8 @@ for (i=0; i<vect.size(); i++){
 	cout << "MY_FATHER=" << vect[i].father << endl;
 }
 */
-for (i=(vect.size()-1)/2; i>=1; i--) find_bridges(p_vect, i*2);
+	for (i = (vect.size () - 1) / 2; i >= 1; i--)
+	    find_bridges (p_vect, i * 2);
 /*
 find_bridges(p_vect, 10);
 find_bridges(p_vect, 8);
@@ -119,10 +129,10 @@ for (i=0; i<vect[fortune].coast_2.size(); i++) cout << vect[fortune].coast_2[i]-
 //(*p).del();
 //vect.erase(p);
 
-for (i=vect.size()-1; i>=0; i--) 
-{
-	if (vect[i].fath == 1) fill_the_gap(p_vect, p_tr, i);
-} 
+	for (i = vect.size () - 1; i >= 0; i--) {
+	    if (vect[i].fath == 1)
+		fill_the_gap (p_vect, p_tr, i);
+	}
 /*
 fill_the_gap(p_vect, p_tr, 8);
 fill_the_gap(p_vect, p_tr, 4);
@@ -138,7 +148,8 @@ for (i=0; i<triangles.size(); i++){
                 cout << (triangles[i].uzel[j]->x) << " " << (triangles[i].uzel[j]->y) << endl;
         }
 }*/
-InitializationGLUT(&argc, argv, LFK, FULL_SCREEN, p_tr, NULL);
+	InitializationGLUT (&argc, argv, LFK, FULL_SCREEN, p_tr, NULL);
+    }
 
-return 0;
+    return 0;
 }

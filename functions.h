@@ -49,12 +49,13 @@ public:
 	point* bridge[4];	//bridges in the group
 	vector <point*> coast_1;
 	vector <point*> coast_2;
-	bool fath = 0;
+	bool fath;
 	
 	point_group(int k){      
 	this->amount = k;
 	this->mass = new point*[k];
 	this->tr_amount = 0;
+	this->fath = 0;
 	}
 
 	void del(){		
@@ -80,4 +81,6 @@ void starting_triangulate(vector <triangle>* p_tr, vector <point_group>* p_vect,
 void razdel(vector <point_group>* p_vect, int num, int type_of_sort); //recursive function realizing the primary partition
 void make_ls(vector <point_group>* p_vect, vector <triangle>* p_tr, int num, int st_1, int st_2, int fin_1, int fin_2);
 void fill_the_gap(vector <point_group>* p_vect, vector <triangle>* p_tr, int num);
+void do_shell(vector <point_group>* p_vect, int num);
+void find_bridges(vector <point_group>* p_vect, int num);
 #endif
